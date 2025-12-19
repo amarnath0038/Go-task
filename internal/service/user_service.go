@@ -64,9 +64,27 @@ func (s *UserService) GetUser(
 
 func (s *UserService) ListUsers(
 	ctx context.Context,
+	page int,
+	limit int,
 ) ([]models.UserResponse, error) {
 
-	users, err := s.repo.ListUsers(ctx)
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 10
+	}
+	if limit > 100 {
+		limit = 100
+	}
+
+	offset := (page - 1) * limit
+
+	users, err := s.repo.ListUsers(
+		ctx,
+		int32(limit),
+		int32(offset),
+	)
 	if err != nil {
 		return nil, err
 	}

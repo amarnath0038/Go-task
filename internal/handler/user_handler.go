@@ -73,9 +73,18 @@ func (h *UserHandler) CreateUser(c *fiber.Ctx) error {
 }
 
 func (h *UserHandler) ListUsers(c *fiber.Ctx) error {
-	users, err := h.service.ListUsers(c.Context())
+	page, err := strconv.Atoi(c.Query("page", "1"))
 	if err != nil {
-		logger.Log.Error("failed to list users", zap.Error(err))
+		return fiber.ErrBadRequest
+	}
+
+	limit, err := strconv.Atoi(c.Query("limit", "10"))
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	users, err := h.service.ListUsers(c.Context(), page, limit)
+	if err != nil {
 		return fiber.ErrInternalServerError
 	}
 
