@@ -2,3 +2,14 @@
 INSERT INTO users (name, dob)
 VALUES ($1, $2)
 RETURNING id, name, dob;
+
+
+-- name: GetUser :one
+SELECT id, name, dob
+FROM users
+WHERE id = $1;
+
+-- name: ListUsers :many
+SELECT id, name, dob
+FROM users
+ORDER BY id;

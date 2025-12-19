@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"user-crud/internal/models"
 	"user-crud/internal/repository"
 )
 
@@ -38,4 +39,51 @@ func (s *UserService) CreateUser(
 
 	_, err := s.repo.CreateUser(ctx, name, dob)
 	return err
+}
+
+func (s *UserService) GetUser(
+	ctx context.Context,
+	id int64,
+) (*models.UserResponse, error) {
+
+	user, err := s.repo.GetUser(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	dob := user.Dob.Time
+	age := CalculateAge(dob)
+
+	return &models.UserResponse{
+		ID:   int64(user.ID),
+		Name: user.Name,
+		Dob:  dob.Format("2006-01-02"),
+		Age:  age,
+	}, nil
+}
+
+func (s *UserService) ListUsers(
+	ctx context.Context,
+) ([]models.UserResponse, error) {
+
+	users, err := s.repo.ListUsers(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	response := make([]models.UserResponse, 0, len(users))
+
+	for _, user := range users {
+		dob := user.Dob.Time
+		age := CalculateAge(dob)
+
+		response = append(response, models.UserResponse{
+			ID:   int64(user.ID),
+			Name: user.Name,
+			Dob:  dob.Format("2006-01-02"),
+			Age:  age,
+		})
+	}
+
+	return response, nil
 }
