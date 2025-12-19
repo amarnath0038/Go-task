@@ -8,6 +8,7 @@ import (
 	"user-crud/config"
 	"user-crud/db/sqlc"
 	"user-crud/internal/repository"
+	"user-crud/internal/service"
 )
 
 func main() {
@@ -16,9 +17,23 @@ func main() {
 
 	queries := sqlc.New(db)
 
-	userRepo := repository.NewUserRepository(queries)
+	// userRepo := repository.NewUserRepository(queries)
 
-	user, err := userRepo.CreateUser(
+	// user, err := userRepo.CreateUser(
+	// 	context.Background(),
+	// 	"Alice",
+	// 	time.Date(1990, 5, 10, 0, 0, 0, 0, time.UTC),
+	// )
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	// fmt.Println("Inserted user via repository:", user)
+
+	userRepo := repository.NewUserRepository(queries)
+	userService := service.NewUserService(userRepo)
+
+	err := userService.CreateUser(
 		context.Background(),
 		"Alice",
 		time.Date(1990, 5, 10, 0, 0, 0, 0, time.UTC),
@@ -27,5 +42,6 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Inserted user via repository:", user)
+	fmt.Println("User created via service")
+
 }
