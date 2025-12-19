@@ -7,8 +7,7 @@ import (
 
 	"user-crud/config"
 	"user-crud/db/sqlc"
-
-	"github.com/jackc/pgx/v5/pgtype"
+	"user-crud/internal/repository"
 )
 
 func main() {
@@ -17,19 +16,16 @@ func main() {
 
 	queries := sqlc.New(db)
 
-	dob := pgtype.Date{
-		Time:  time.Date(1990, 5, 10, 0, 0, 0, 0, time.UTC),
-		Valid: true,
-	}
+	userRepo := repository.NewUserRepository(queries)
 
-	// Insert user
-	user, err := queries.CreateUser(context.Background(), sqlc.CreateUserParams{
-		Name: "Alice",
-		Dob:  dob,
-	})
+	user, err := userRepo.CreateUser(
+		context.Background(),
+		"Alice",
+		time.Date(1990, 5, 10, 0, 0, 0, 0, time.UTC),
+	)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Inserted user:", user)
+	fmt.Println("Inserted user via repository:", user)
 }
