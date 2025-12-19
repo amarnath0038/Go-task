@@ -32,6 +32,7 @@ func main() {
 	app := fiber.New()
 
 	app.Use(middleware.RequestID())
+	app.Use(middleware.RequestDuration())
 
 	routes.Register(app, userHandler)
 
