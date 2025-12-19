@@ -8,6 +8,7 @@ import (
 	"user-crud/db/sqlc"
 	"user-crud/internal/handler"
 	"user-crud/internal/logger"
+	"user-crud/internal/middleware"
 	"user-crud/internal/repository"
 	"user-crud/internal/routes"
 	"user-crud/internal/service"
@@ -29,6 +30,8 @@ func main() {
 	userHandler := handler.NewUserHandler(userService)
 
 	app := fiber.New()
+
+	app.Use(middleware.RequestID())
 
 	routes.Register(app, userHandler)
 
