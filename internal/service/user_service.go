@@ -87,3 +87,32 @@ func (s *UserService) ListUsers(
 
 	return response, nil
 }
+
+func (s *UserService) UpdateUser(
+	ctx context.Context,
+	id int64,
+	name string,
+	dob time.Time,
+) (*models.UserResponse, error) {
+
+	user, err := s.repo.UpdateUser(ctx, id, name, dob)
+	if err != nil {
+		return nil, err
+	}
+
+	age := CalculateAge(user.Dob.Time)
+
+	return &models.UserResponse{
+		ID:   int64(user.ID),
+		Name: user.Name,
+		Dob:  user.Dob.Time.Format("2006-01-02"),
+		Age:  age,
+	}, nil
+}
+
+func (s *UserService) DeleteUser(
+	ctx context.Context,
+	id int64,
+) error {
+	return s.repo.DeleteUser(ctx, id)
+}

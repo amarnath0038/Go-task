@@ -48,3 +48,29 @@ func (r *UserRepository) ListUsers(
 ) ([]sqlc.User, error) {
 	return r.queries.ListUsers(ctx)
 }
+
+func (r *UserRepository) UpdateUser(
+	ctx context.Context,
+	id int64,
+	name string,
+	dob time.Time,
+) (sqlc.User, error) {
+
+	pgDob := pgtype.Date{
+		Time:  dob,
+		Valid: true,
+	}
+
+	return r.queries.UpdateUser(ctx, sqlc.UpdateUserParams{
+		ID:   int32(id),
+		Name: name,
+		Dob:  pgDob,
+	})
+}
+
+func (r *UserRepository) DeleteUser(
+	ctx context.Context,
+	id int64,
+) error {
+	return r.queries.DeleteUser(ctx, int32(id))
+}
